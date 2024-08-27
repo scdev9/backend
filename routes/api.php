@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiControlller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\ApiToken;
@@ -21,29 +22,9 @@ use Illuminate\Support\Str;
 /*Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });*/
-Route::middleware('token_gen')->post('/token', function (Request $request) {
-    $uhash=Hash::make($request->username);
-    $phash=Hash::make($request->password);
-    $token= Str::random(60);
-    $user = User::where('name',$request->username)->first();
-    //dd($user);
-    $user->remember_token=$token;
-
-    $user->save();
-    return response()->json([
-        'username'=>$request->username,
-        'api_token'=> $token,
-    ]);
-});
 
 
-Route::middleware('api_token')->get('/data', function (Request $request) {
-    
-    $name = $request->query('name');
 
-    return response()->json([
+Route::middleware('api_token')->get('/data',  [ApiControlller::class, 'apiDataGet']);
 
-        'name' => $name,
-    ]);
-});
-
+Route::post('/register', [ApiControlller::class, 'userRegister']);
